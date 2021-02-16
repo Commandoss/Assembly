@@ -35,7 +35,8 @@ start:
     mov ax, 4c00h
     int 21h 
     
-nextline: 
+nextline:  
+
     mov ah, 02h
     mov dl, 0ah  
     int 21h 
