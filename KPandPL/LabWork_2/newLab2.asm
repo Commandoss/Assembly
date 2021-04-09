@@ -57,7 +57,7 @@ carriageReturn macro
     int 21h  
 endm 
 
-SpacesCheck macro pointer ; если нашел пробелы то заново ввод
+SpacesCheck macro pointer
     lea di, pointer
     
     mov cx, 0
@@ -162,7 +162,7 @@ ErrorStr4_3:
     carriageReturn
     jmp thirdStringEnter
     
-compareWords: ; сравнение слов
+compareWords:
     lea di, searchString
     mov cx, 0
     mov cl, searchSize
@@ -177,7 +177,7 @@ notThisWord:
     dec si
     jmp wordSearch
     
-wordSearch: ; цикл поиска пробела (сл слова)
+wordSearch: 
     cmp [si], '$'
     je printString
     
@@ -219,16 +219,16 @@ endString:
     lea di, string 
     mov al, stringSize  
      
-    add di, ax  ; конец строки
-    add di, cx  ; от конца строки + changesize
+    add di, ax 
+    add di, cx  ;
     
     mov ax, di  
-    sub ax, si  ; получили число элементов между  
+    sub ax, si  
     
     mov bx, si
     
     mov si, di 
-    sub si, cx  ; поставили si на конец символ
+    sub si, cx 
     
     mov cx, ax 
     jmp shiftMoreInsert
