@@ -574,12 +574,24 @@ verticalCheck:
     jne moveDown 
     
 badCheck:
-    cmp flagMowing, 0
-    je endBadCheck 
+    push horizontalMovement
+    push ballPositionX
     call horizontalMove
-endBadCheck:
-    mov flagMowing, 0 
+    pop ballPositionX
+    pop horizontalMovement
+    call changeHorizontalMovement
+;    call changeVerticalMovement 
 ret
+    
+changeVerticalMovement:
+    cmp verticalMovement, 0
+    je verticalMovementUp
+    mov verticalMovement, 0
+    ret
+verticalMovementUp:
+    mov verticalMovement, 1
+    ret
+
 
 changeHorizontalMovement:
     cmp horizontalMovement, 0
@@ -591,27 +603,31 @@ horizontalMovementLeft:
     ret
 
 cornerCubeUp: 
-    mov ax, ballPositionX
-    mov bx, horizontalMovement
+    push horizontalMovement
+    push ballPositionX
+
     call horizontalMove  
-    mov ballPositionX, ax
-    mov verticalMovement, 0
+    pop ballPositionX
+    call changeVerticalMovement 
     mov flagMowing, 0 
     inc ballPositionY
-    mov horizontalMovement, bx
+    pop horizontalMovement
     call changeHorizontalMovement 
     jmp moveDown
     
 notMoveUp:
-    mov verticalMovement, 0
+    call changeVerticalMovement 
     inc ballPositionY
     mov flagMowing, 0 
     jmp moveDown
     
 moveUp:
     call horizontalCheck
+    cmp flagMowing, 0
+    je checkUp
     call badCheck
     
+checkUp:  
     dec ballPositionY
     call checkCollision 
     
@@ -625,28 +641,31 @@ moveUp:
     call horizontalMove    
     jmp moveEnd
     
-cornerCubeDown: 
-    mov ax, ballPositionX 
-        mov bx, horizontalMovement
-    call horizontalMove  
-    mov ballPositionX, ax
-    mov verticalMovement, 1
-    mov flagMowing, 0 
-    dec ballPositionY
-        mov horizontalMovement, bx
-    call changeHorizontalMovement 
+cornerCubeDown:
+    push horizontalMovement 
+    push ballPositionX 
+    call horizontalMove 
+    pop ballPositionX
+    call changeVerticalMovement 
+    mov flagMowing, 0
+    sub ballPositionY, 1  
+    pop  horizontalMovement
+    call changeHorizontalMovement
     jmp moveUp
 
 notMoveDown:
-    mov verticalMovement, 1
+    call changeVerticalMovement 
     dec ballPositionY 
     mov flagMowing, 0
     jmp moveUp
-
+    
 moveDown:
     call horizontalCheck
+    cmp flagMowing, 0
+    je checkDown
     call badCheck
-    
+
+checkDown:   
     inc ballPositionY
     call checkCollision
     
@@ -667,45 +686,75 @@ horizontalCheck:
     
 checkLeft:
     sub ballPositionX, 4 
-    mov ax, flagColor
+    
+    push flagColor
     mov flagColor, 1 
     call checkCollision
-    mov flagColor, ax 
-    add ballPositionX, 4  
-    cmp flagGlass, 0
-    je endCheck 
-    mov flagGlass, 0
-    mov flagMowing, 0
+    pop flagColor
+     
+    add ballPositionX, 4
+      
+;    cmp flagGlass, 0
+;    je endCheck 
+;    mov flagGlass, 0
+;    mov flagMowing, 0
 ret
     
 checkRight:
     add ballPositionX, 4
-    mov ax, flagColor
+    push flagColor
     mov flagColor, 1  
     call checkCollision 
-    mov flagColor, ax
+    pop flagColor
     sub ballPositionX, 4
-    cmp flagGlass, 0
-    je endCheck
-    mov flagGlass, 0
-    mov flagMowing, 0
+;    cmp flagGlass, 0
+;    je endCheck
+;    mov flagGlass, 0
+;    mov flagMowing, 0
 ret 
 
 endCheck:
 ret
     
 horizontalMove:
+    mov flagMowing, 0 
+    call checkAll 
+    
+    cmp ax, 2
+    je endCheckAll
+    
     cmp horizontalMovement, 0
-    mov flagMowing, 0
     je moveLeft
     jne moveRight
+    
+checkAll:
+   mov ax, 0
+   mov flagMowing, 0
+   push ballPositionX
+   add ballPositionX, 4
+   call checkCollision
+   cmp flagMowing, 0
+   je endCheckAll
+   mov flagMowing, 0 
+   inc ax
+   pop ballPositionX  
+   push ballPositionX
+   sub ballPositionX, 4
+   call checkCollision
+   cmp flagMowing, 0
+   je endCheckAll
+   inc ax 
+endCheckAll:
+    mov flagMowing, 0 
+    
+ret
 
 notMoveLeft:
+    call changeHorizontalMovement
     add ballPositionX, 4
-    mov horizontalMovement, 1
     mov flagMowing, 0
     jmp moveRight
-    
+ret   
 moveLeft:
     sub ballPositionX, 4  
     call checkCollision 
@@ -715,11 +764,11 @@ moveLeft:
 ret
     
 notMoveRight: 
-    mov horizontalMovement, 0
+    call changeHorizontalMovement 
     sub ballPositionX, 4 
     mov flagMowing, 0
     jmp moveLeft
-    
+ret   
 moveRight:
     add ballPositionX, 4 
     call checkCollision
@@ -766,7 +815,8 @@ checkCollision proc near
     cmp es:[di], 00h 
     je notCollision
                
-    inc flagMowing
+    mov flagMowing, 1
+;    mov flagGlass, 0
     
     cmp flagColor, 1
     je notCollision
@@ -786,19 +836,19 @@ loopCollision:
     jmp notCollision  
     
 checkPaddle: 
-    mov ax, paddlePositionX   
-    
-    cmp ax, ballPositionX 
-    ja endGame
-    
-    mov ax, 2
-    mov bx, paddleSize
-    mul bx
-    sub ax, 2 
-    add ax, paddlePositionX
-    
-    cmp ax, ballPositionX 
-    jb endGame 
+;    mov ax, paddlePositionX   
+;    
+;    cmp ax, ballPositionX 
+;    ja endGame
+;    
+;    mov ax, 2
+;    mov bx, paddleSize
+;    mul bx
+;    sub ax, 2 
+;    add ax, paddlePositionX
+;    
+;    cmp ax, ballPositionX 
+;    jb endGame 
     
     inc flagMowing
     mov flagColor, 0
@@ -950,14 +1000,14 @@ noKeyPressed:
     cmp gameOver, 1
     je LoseWait
     
-    cmp winCount, 0
+    cmp score, 630
     je winWait
     
-;    xor ax, ax 
-;    mov ah, 86h 
-;    mov dx, 086A0h
-;    mov cx, 1
-;    int 15h 
+    xor ax, ax 
+    mov ah, 86h 
+    mov dx, 086A0h
+    mov cx, 1
+    int 15h 
     
     jmp Start
     
