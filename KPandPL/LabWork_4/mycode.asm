@@ -1,6 +1,6 @@
 .model small
 .stack 100h
-.data      
+.data       
 
 messageWelcome db "Arkanoid",0Dh ,0Ah   
                db "Controls:",0Dh ,0Ah
@@ -13,57 +13,27 @@ messageWin     db "*               YOU WIN                *",0Dh ,0Ah, '$'
 
 pointUser db "Score:$" 
 failMsg db "You lose! Press enter to start over..$"
+winMsg db "You Win! Press enter to start over..$" 
 
-screenSize equ 2000
-screenBuffer db screenSize dup(0) 
+sizeBuffer equ 2000
+buffer dw sizeBuffer dup(?) 
 
-;playField db 396 dup(00h)    
+level db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h	  
+	  db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h	  
+	  db 00h, 00h, 00h, 00h, 20h, 20h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 20h, 20h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h	  
+	  db 00h, 00h, 00h, 00h, 00h, 00h, 20h, 20h, 00h, 00h, 00h, 00h, 00h, 00h, 20h, 20h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h	  
+	  db 00h, 00h, 00h, 00h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h	  
+	  db 00h, 00h, 20h, 20h, 20h, 20h, 00h, 00h, 20h, 20h, 20h, 20h, 20h, 20h, 00h, 00h, 20h, 20h, 20h, 20h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h	  
+	  db 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h	  
+	  db 20h, 20h, 00h, 00h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 00h, 00h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h	  
+	  db 20h, 20h, 00h, 00h, 20h, 20h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 20h, 20h, 00h, 00h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h	  
+	  db 00h, 00h, 00h, 00h, 00h, 00h, 20h, 20h, 20h, 20h, 00h, 00h, 20h, 20h, 20h, 20h, 00h, 00h, 00h, 00h, 00h, 00h, 20h, 20h, 20h, 20h, 00h, 00h, 00h, 00h, 00h, 00h	   
 
-level db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h ; черный 
-      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-      db 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h ; синий
-      db 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h, 10h
-      db 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h ; зеленый
-      db 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h
-      db 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h ; голубой
-      db 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h, 30h
-      db 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h ; красный
-      db 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h, 40h 
-;      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-;      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-;      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h 
-;      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-;      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-;      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h 
-;      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-;      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h  
-;
-;     
-;      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h	  
-;	  db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h	  
-;	  db 00h, 00h, 00h, 00h, 20h, 20h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 20h, 20h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h	  
-;	  db 00h, 00h, 00h, 00h, 00h, 00h, 20h, 20h, 00h, 00h, 00h, 00h, 00h, 00h, 20h, 20h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h	  
-;	  db 00h, 00h, 00h, 00h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h	  
-;	  db 00h, 00h, 20h, 20h, 20h, 20h, 00h, 00h, 20h, 20h, 20h, 20h, 20h, 20h, 00h, 00h, 20h, 20h, 20h, 20h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h	  
-;	  db 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h	  
-;	  db 20h, 20h, 00h, 00h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 00h, 00h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h	  
-;	  db 20h, 20h, 00h, 00h, 20h, 20h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 20h, 20h, 00h, 00h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h	  
-;	  db 00h, 00h, 00h, 00h, 00h, 00h, 20h, 20h, 20h, 20h, 00h, 00h, 20h, 20h, 20h, 20h, 00h, 00h, 00h, 00h, 00h, 00h, 20h, 20h, 20h, 20h, 00h, 00h, 00h, 00h, 00h, 00h	  
-;	  db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h	  
-;	  db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h	  
-;	  db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h	  
-;	  db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h	  
-;	  db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h	  
-;	  db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h	  
-;	  db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h	  
-;	  db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h	;32
-	    
+gameOver dw 0
 
-;levelCount dw 88
-;           dw 46
+flagMowing dw 0 
 
-      
-;currentLevel dw 0     
+countShiftPaddle dw 0     
 
 verticalMovement dw 0
 horizontalMovement dw 0
@@ -74,54 +44,42 @@ ballSize dw 2
                    
 paddlePositionY dw 0 
 paddlePositionX dw 0 
-paddleSize dw 12
-                  
-previousTime dw 0    
+paddleSize dw 16
+paddleStart db 0
+                    
 score dw 0                       
-winCount dw 0
+winCount dw 630  
 
 .code
-
 welcomeScreen proc near 
     push ax
     push bx 
-    push dx
-    push es  
-      
-    push 0b800h
-    pop es                               
-
+    push dx                                
 settingGraphicsMode:
     mov ah, 00
     mov al, 03 ; - 03 Ц 80:25 стандартный 16-цветный текстовый режим;
-    int 10h  
-     
-    call clearScreen
-
-
-startMenu:  
-    mov ah, 9h
-    mov dx, offset messageWelcome
-    int 21h          
-
+    int 10h    
+startMenu:
+    xor ax, ax        
+    mov ah, 9h 
+    lea dx, messageWelcome
+    int 21h    
+    xor ax, ax
+    mov ah, 02
+    mov dh, 25
+    int 10h           
 waitEnterWelcome: 
     mov ah, 1 ; - 01h Ц 83/84-клавиши; 
     int 16h 
-    jz waitEnterWelcome 
-    
+    jz waitEnterWelcome   
     xor ah, ah
-    int 16h  
-    
+    int 16h    
     cmp ah, 1Ch   ; если enter
-    je EnterWelcome   
-    
+    je EnterWelcome       
     cmp ah, 01h   ; если строка не пуста
-    jne waitEnterWelcome 
-
-    jmp Exit
-    
-EnterWelcome:
-    pop es  
+    je Exit
+    jmp waitEnterWelcome  
+EnterWelcome:  
     pop dx
     pop bx
     pop ax      
@@ -129,122 +87,91 @@ EnterWelcome:
 endp 
 
 clearScreen proc near 
-    xor ax, ax
     mov ah, 06
-    
-    mov bh, 7
+    mov al, 00  
+    mov bh, 00h
     xor cx, cx
-    
     mov dl, 80
     mov dh, 25
     int 10h
     ret
-endp
+endp 
 
 initScreen proc near
     push cx
     push ax
     push si
-    push es  
+    push ds  
     push bx
-    push dx   
-      
-    call clearScreen  
-      
-    push 0b800h
-    pop es 
-    
-    xor di, di
-    mov cx, 80   
-        
-firstLine:
-    mov es:[di], ' '
-    inc di
-    mov es:[di], 40h
-    inc di
-    loop firstLine 
-    
-    mov cx, 23     
-columns:
-    mov es:[di], ' '
-    inc di
-    mov es:[di], 40h
-    inc di         
-    
-    add di, 78
-    add di, 78   
-    
-    mov es:[di], ' '
-    inc di
-    mov es:[di], 40h
-    inc di  
-
-    loop columns  
-    
+    push dx      
+    call clearScreen
+    lea di, buffer
+    mov al, ' '
+    mov ah, 40h           
     mov cx, 80    
-secondLine:
-    mov es:[di], ' '
-    inc di
-    mov es:[di], 40h
-    inc di
-    
-    loop secondLine  
-    
-
-    mov di, 80
-    add di, 80 
-    add di, 2       
-    mov cx, 23    
-glass:   
-    mov es:[di], ' '
-    inc di
-    mov es:[di], 70h
-    inc di
-    
-    add di, 64
-    add di, 64 
-    
-    mov es:[di], ' '
-    inc di
-    mov es:[di], 70h 
-    inc di   
-    
-    add di, 14
-    add di, 14
-  
-    loop glass
-    
-glassEnd: 
-    mov di, 160 
-    add di, 2
-    mov cx, 66
-    
-glassBottom:
-    mov es:[di], ' '
-    inc di
-    mov es:[di], 70h
-    inc di     
-    
-    loop glassBottom
-    
+firstLineRed:
+    rep stosw   
+    mov cx, 23     
+columnsRed:
+    stosw           
+    add di, 156     
+    stosw 
+    loop columnsRed    
+    mov cx, 80    
+secondLineRed:
+    rep stosw 
+    lea di, buffer    
+    add di, 162     
+    mov cx, 23
+    mov ah, 70h    
+columnsGlass:   
+    stosw 
+    add di, 128    
+    stosw       
+    add di, 28
+    loop columnsGlass  
+    lea di, buffer 
+    add di, 162 
+    mov cx, 66  
+topLineGlass:      
+    rep stosw        
 ScorePrint:
     mov ax, 07h
     mov cx, 6
-    lea si, pointUser 
-    mov di, 456
-    
+    lea si, pointUser
+    lea di, buffer 
+    add di, 456   
 scoreLoop:
     movsb 
-    stosb
-    loop scoreLoop 
-    
+    stosb 
+    loop scoreLoop
     pop dx
     pop bx
-    pop es
+    pop ds
     pop si
     pop ax
     pop cx
     ret
+endp 
+
+printBuffer proc near 
+    push es
+    push ds
+    push si
+    push di
+    call clearScreen
+    push 0b800h
+    pop es
+initPrintBuffer:
+    mov di, 0
+    mov si, offset buffer
+    mov cx, sizeBuffer
+loopBuffer:
+    rep movsw  
+    pop di
+    pop si
+    pop ds
+    pop es
 endp
 
 printScore proc near
@@ -252,8 +179,7 @@ printScore proc near
     xor cx, cx    
     mov ax, score
     xor dx, dx 
-    mov si, 10   
-    
+    mov si, 10      
 loadStack:   
     div si 			  		
     add dl, '0'
@@ -262,8 +188,7 @@ loadStack:
     inc cx        
     cmp ax, 0
     jne loadStack   
-    mov bx, 468 
-         
+    mov bx, 468         
 printStack:
     pop dx 
     push ds
@@ -277,43 +202,35 @@ printStack:
     loop printStack          
     popa 
     ret   
-endp    
+endp
 
-initPlayField proc near
+initLevel proc near
     push cx
     push bx
     push ax  
     push es
     push di
-    push si
-      
-    push 0b800h
-    pop es
-    mov si, offset level   
-    
-    xor di, di
+    push si 
+    lea di, buffer
+    lea si, level   
     xor cx, cx
-    xor bx, bx
-     
+    xor bx, bx    
     mov bl, 4
     add di, 324
     add cx, 64 
     mov ax, ' '
-    jmp loop11
-    
+    jmp loop11    
 nextLine:
     add di, 32
     add cx, 64
-    dec bx  
-    
+    dec bx      
 loop11:
     cld
     stosb
     movsb      
     loop loop11
     cmp bx, 0
-    jne nextLine 
-       
+    jne nextLine   
     pop si
     pop di
     pop es 
@@ -325,73 +242,101 @@ endp
 
 printLose proc near    
     push es 
-    push ds
-    
+    push ds   
     push 0b800h
     pop es
-    
     lea si, failMsg
-    mov ax, 40h
-    
-    mov di, 820
-    mov cx, 37
-    
+    mov ax, 40h   
+    mov di, 830
+    mov cx, 37   
 loopLose:
     movsb
     stosb
-    loop loopLose 
-    
+    loop loopLose       
+    pop ds
+    pop es
+    ret
+endp 
+
+printWin proc near   
+    push es 
+    push ds
+    push 0b800h
+    pop es
+    lea si, winMsg
+    mov ax, 20h
+    lea di, buffer
+    mov di, 830
+    mov cx, 36   
+loopWin:
+    movsb
+    stosb
+    loop loopWin     
     pop ds
     pop es
     ret
 endp
 
+waitEnter proc near
+  waitEnterLose: 
+    mov ah, 1 ; - 01h Ц 83/84-клавиши; 
+    int 16h 
+    jz waitEnterLose    
+    xor ah, ah
+    int 16h   
+    cmp ah, 01h
+    je Escape     
+    cmp ah, 1Ch   ; если enter
+    je EnterPressed   
+    jmp waitEnterLose
+EnterPressed:   
+  ret  
+endp
+
 displayPaddle proc near       
     push es
-    
-    push 0b800h
-    pop es 
-    
+    push ds    
 clearPaddle:
     mov di, paddlePositionY
     mov ax, 160
-    mul di
-    
-    add ax, paddlePositionX  
-    mov di, ax
+    mul di  
+    add ax, paddlePositionX 
+    lea di, buffer 
+    add di, ax
     mov cx, paddleSize
-
     cmp paddlePositionX, 5
-    je notShiftLeft
-    
-    cmp paddlePositionX, 133
+    je notShiftLeft   
+    mov ax, 2
+    mul cx 
+    add ax, paddlePositionX
+    cmp ax, 133
     je ShiftRight
-
+    sub di, 4              
+    add cx, 4
+    jmp loopClearPaddle
 ShiftRight:       
-    sub di, 2  
+    sub di, 4
+    jmp loopClearPaddle     
 notShiftLeft:    
-    add cx, 2
-    
+    add cx, 2   
 loopClearPaddle:    
     mov es:[di], 00h
     add di, 2
-    loop loopClearPaddle   
-  
+    loop loopClearPaddle    
 newPaddle:   
     mov di, paddlePositionY
     mov ax, 160
-    mul di
-    
-    add ax, paddlePositionX  
-    mov di, ax
-    mov cx, paddleSize 
-    
+    mul di   
+    add ax, paddlePositionX 
+    lea di, buffer 
+    add di, ax
+    mov cx, paddleSize  
 loop21:    
     mov es:[di], 60h
     add di, 2
     loop loop21
-
-endPaddlePrint:        
+endPaddlePrint:
+    pop ds        
     pop es    
     ret
 endp 
@@ -401,25 +346,18 @@ displayBall proc near
     push bx
     push cx
     push es
-    
-    push 0b800h
-    pop es
-    
     mov ax, ballPositionY 
     mov bx, 160 
     mul bx
-    
     mov bx, ballPositionX
     add ax, bx
-    
-    mov di, ax
-    mov cx, 2 
-    
+    lea di, buffer
+    add di, ax
+    mov cx, 2   
 loopBall:   
     mov es:[di], 50h
     add di, 2
-    loop loopBall    
-    
+    loop loopBall      
     pop es
     pop cx
     pop bx
@@ -432,259 +370,296 @@ deleteBall proc near
     push bx
     push cx
     push es
-    
-    push 0b800h
-    pop es
-    
     mov ax, ballPositionY 
     mov bx, 160 
-    mul bx
-    
-    mov bx, ballPositionX
-    add ax, bx
-    
-    mov di, ax
-    mov cx, 2 
-    
+    mul bx 
+    add ax, ballPositionX
+    lea di, buffer
+    add di, ax 
+    mov cx, 2    
 loopDeleteBall:   
     mov es:[di], 00h
     add di, 2
-    loop loopDeleteBall    
-    
+    loop loopDeleteBall      
     pop es
     pop cx
     pop bx
     pop ax
     ret
-endp  
+endp 
 
-paddleStart proc near
-    mov ballPositionY, 22
-    mov ballPositionX, 63 
-    
-    mov paddlePositionX, 53
-    mov paddlePositionY, 23
-    
-displayPaddleAndBall:
-    call displayBall  
-    call displayPaddle
-    
-paddleLoop:
-    mov ah, 1
-    int 16h
-    jz paddleLoop
-    
-    xor ax, ax
-    int 16h 
-    
-    cmp ah, 4Dh
-    je paddleRight 
-    
-    cmp ah, 4Bh
-    je paddleLeft 
-    
-    cmp ah, 1Ch
-    je paddleEnter
-    
-    cmp ah, 01h
-    je paddleEscape
-     
-    jmp paddleLoop   
-    
-paddleLeft:  
-    cmp paddlePositionX, 6
-    jb paddleLoop
-    
-    call deleteBall 
-    sub paddlePositionX, 2
-    sub ballPositionX, 2
-    
-    jmp displayPaddleAndBall 
-    
-paddleRight:
-    mov ax, paddlePositionX
-    add ax, 24 
-    
-    cmp ax, 132 
-    ja paddleLoop
-     
-    call deleteBall  
-    add paddlePositionX, 2
-    add ballPositionX, 2
-    
-    jmp displayPaddleAndBall
-    
-paddleEnter:
-    ret        
-    
-paddleEscape: 
-    jmp Exit
-endp
-  
 moveBall proc near  
-    push dx 
-       
+    push dx
+    push es        
+verticalCheck:
+    mov flagMowing, 0
+    cmp verticalMovement, 1
+    je moveUp
+    jne moveDown   
+deleteHorizontal:
+    push horizontalMovement
+    push ballPositionX
+    call horizontalMove 
+    pop ballPositionX
+    pop horizontalMovement
+    call changeHorizontalMovement
+ret
+    
+changeVerticalMovement:
     cmp verticalMovement, 0
-    je moveDown 
-    
-    cmp ballPositionY, 0
-    jne notUpCol  
-    
-    mov verticalMovement, 1  
-    
-notUpCol:              
-    jmp horizontalCheck   
-    
-moveDown:
-    cmp ballPositionY, 22
-    je notDownCol
-             
-    mov bx, offset paddlePositionX
-    mov ax, [bx]
-    cmp ax, ballPositionX  
-    jg paddleLose
-    add ax, 3
-    cmp ax, ballPositionX
-    jl paddleLose
+    je verticalMovementUp
     mov verticalMovement, 0
-    jmp notDownCol       
+ret
+verticalMovementUp:
+    mov verticalMovement, 1
+ret
+
+changeHorizontalMovement:
+    cmp horizontalMovement, 0
+    je horizontalMovementLeft
+    mov horizontalMovement, 0
+ret
+horizontalMovementLeft:
+    mov horizontalMovement, 1
+ret
+
+cornerCube:
+    call horizontalCheck
+    cmp flagMowing, 1
+    je startCornerCubeDelete
+ret
+startCornerCubeDelete:
+    push horizontalMovement
+    push ballPositionX
+    call horizontalMove 
+    pop ballPositionX    
+    cmp verticalMovement, 1
+    je cornerCubeUp
+    jne cornerCubeDown 
+cornerCubeUp:
+    inc ballPositionY
+    jmp cornerExit    
+cornerCubeDown:
+    dec ballPositionY
+cornerExit:
+    call changeVerticalMovement
+    pop horizontalMovement
+    call changeHorizontalMovement 
+ret
     
-paddleLose:
-    mov ax, 01h
-    pop dx
-    ret    
-    
-notDownCol:
-   
- horizontalCheck:
+notMoveUp:
+    call changeVerticalMovement 
+    inc ballPositionY 
+    jmp verticalCheck   
+moveUp:
+    call horizontalCheck
+    cmp flagMowing, 0
+    je checkUp
+    call deleteHorizontal     
+checkUp:  
+    dec ballPositionY
+    call checkCollision    
+    cmp flagMowing, 1
+    je notMoveUp 
+    push verticalMovement
+    call cornerCube 
+    pop ax
+    cmp ax, verticalMovement 
+    jne moveDown
+    call horizontalMove           
+    jmp moveEnd
+notMoveDown:
+    call changeVerticalMovement 
+    dec ballPositionY 
+    jmp verticalCheck    
+moveDown:
+    call horizontalCheck
+    cmp flagMowing, 0
+    je checkDown
+    call deleteHorizontal    
+checkDown:   
+    inc ballPositionY
+    call checkCollision    
+    cmp flagMowing, 1
+    je notMoveDown
+    push verticalMovement   
+    call cornerCube 
+    pop ax
+    cmp ax, verticalMovement 
+    jne moveUp 
+    call horizontalMove   
+    jmp moveEnd    
+horizontalCheck:
+    push ballPositionX
+    cmp horizontalMovement, 0
+    je checkLeft
+    jne checkRight
+checkLeft:
+    sub ballPositionX, 4
+    jmp check
+checkRight: 
+    add ballPositionX, 4
+check: 
+    call checkCollision 
+    pop ballPositionX
+ret 
+
+horizontalMove: 
+    mov flagMowing, 0
     cmp horizontalMovement, 0
     je moveLeft
-    
-    cmp ballPositionX, 22
-    jne changeBallPos
-    
-    mov horizontalMovement, 1
-    jmp changeBallPos
-    
-moveLeft:   
-    cmp ballPositionX, 4
-    je changeBallPos   
-    mov horizontalMovement, 0 
-    
-changeBallPos: 
-    cmp horizontalMovement, 1
-    jne moveRight
-    
-    dec ballPositionX 
-    call checkCollision 
-    
-    cmp dx, 00h
-    je verticalMove
-    inc ballPositionX
-    mov horizontalMovement, 0  
-    jmp verticalMove  
-    
+    jne moveRight    
+notMoveLeft:
+    call changeHorizontalMovement
+    add ballPositionX, 4
+    jmp horizontalMove
+ret   
+moveLeft:
+    sub ballPositionX, 4  
+    call checkCollision    
+    cmp flagMowing, 1
+    je notMoveLeft
+ret
+
+notMoveRight: 
+    call changeHorizontalMovement 
+    sub ballPositionX, 4
+    jmp horizontalMove 
+ret   
 moveRight:
-    inc ballPositionX 
-    call checkCollision 
-    cmp dx, 00h
-    je verticalMove
-    dec ballPositionX
-    mov horizontalMovement, 1
-     
-verticalMove:
-    cmp verticalMovement, 1
-    jne moveUp
-    inc ballPositionY 
-    call checkCollision  
-    cmp dx, 00h
-    je moveEnd
-    dec ballPositionY 
-    mov verticalMovement, 0
-    jmp moveEnd           
-    
-moveUp:
-    dec ballPositionY  
-    call checkCollision
-    cmp dx, 00h
-    je moveEnd
-    inc ballPositionY  
-    mov verticalMovement, 1
-    
-moveEnd:   
-    call checkCollision  
+    add ballPositionX, 4 
+    call checkCollision   
+    cmp flagMowing, 1
+    je notMoveRight 
+ret 
+moveEnd:    
     xor ax, ax
+    pop es
     pop dx
     ret
-endp
+endp 
 
 checkCollision proc near    
     push ax
     push bx
-    push cx
-    push es   
-     
-    push 0b800h
-    pop es   
+    push cx       
+    mov ax, ballPositionY 
+    mov bx, 160 
+    mul bx 
+    add ax, ballPositionX
+    lea di, buffer
+    add di, ax
     
-    mov di, paddlePositionY
-    mov ax, 160
-    mul di
+    cmp ballPositionY, 23
+    je checkPaddle
     
-    add ax, paddlePositionX  
-    mov di, ax
+    cmp ballPositionY, 1
+    je collisionGalss
     
-    cmp es:[di], 00h 
-    je notCollision 
+    cmp ballPositionX, 129
+    ja collisionGalss
+    
+    cmp ballPositionX, 5
+    jb collisionGalss
+    
+    cmp [di], 00h 
+    je notCollision
+               
+    mov flagMowing, 1
     
     add score, 10
     dec winCount
-    call printScore 
-     
-    mov es:[di], 00h
-    inc di    
-    je deleteInc
+    call printScore  
     
-deleteInc:
-    inc di
-    mov es:[di], 00h
+    mov cx, 2
+
+loopCollision:    
+    mov [di], 00h
+    add di, 2
+    loop loopCollision
+    jmp notCollision  
     
+checkPaddle: 
+    mov ax, paddlePositionX   
+    
+    cmp ax, ballPositionX 
+    ja endGame
+    
+    mov ax, 2
+    mov bx, paddleSize
+    mul bx
+    sub ax, 2 
+    add ax, paddlePositionX
+    
+    cmp ax, ballPositionX 
+    jb endGame 
+    
+    inc flagMowing
+    jmp notCollision    
+endGame:
+    mov gameOver, 1
+    jmp notCollision   
+collisionGalss: 
+    mov flagMowing, 1     
 notCollision:  
-    pop es
     pop cx
     pop bx
     pop ax
     ret
-endp
+endp 
 
-   
-
-printWin proc near   
-
+clearBuffer proc near
+    push es
+    push ds
+    lea di, buffer
+    
+    mov al, ' '
+    mov ah, 00h 
+    mov cx, sizeBuffer
+clearLoop:
+    stosw
+loop clearLoop
+     
+    
+    pop ds
+    pop es
+    
+ret 
 endp
 
 main:
     mov ax, @data
-    mov ds, ax      
-    call welcomeScreen
-    call initScreen
-    
+    mov ds, ax
+    mov es, ax      
+    call welcomeScreen   
 restart:
     mov score, 0 
-    mov previousTime, 0   ;????
-  
-    call printScore 
-    call initPlayField
-    call paddleStart; ----
+    mov gameOver, 0
+    mov flagMowing, 0
+    mov paddleStart, 0
     
-    mov verticalMovement, 1
-    mov horizontalMovement, 1
-        
+    mov verticalMovement, 0
+    mov horizontalMovement, 0 
+    
+    mov ballPositionY, 22
+    mov ballPositionX, 69 
+    
+    mov paddlePositionX, 53
+    mov paddlePositionY, 23
+    
+initGame:
+    call initScreen
+    call initLevel
+    call displayBall
+    call displayPaddle
+      
+    call printBuffer
+     
 start: 
-    mov ah, 1
+    mov ah, 01h
     int 16h
     jz noKeyPressed
-    
+       
     xor ax, ax
     int 16h 
     
@@ -702,38 +677,98 @@ start:
      
     jmp noKeyPressed   
      
-Right:  
-    mov ax, paddlePositionX
-    add ax, 24 
+Right:
+    mov ax, 2 
+    mov bx, paddleSize
+    mul bx
+    add ax, paddlePositionX 
+    cmp ax, 133 
+    jae start
     
-    cmp ax, 126 
-    ja noKeyPressed
+    cmp paddleStart, 0
+    jne shiftPaddleRight    
+    call deleteBall 
+    add paddlePositionX, 4
+    add ballPositionX, 4   
+    jmp paddleNotStart  
     
-    add paddlePositionX, 2
-    call displayPaddle
-    jmp noKeyPressed 
+shiftPaddleRight:   
+    add paddlePositionX, 4 
+    call displayPaddle  
+    jmp start 
     
 Left:
-    cmp paddlePositionX, 8
-    jb noKeyPressed
+    cmp paddlePositionX, 5
+    jbe Start 
     
-    sub paddlePositionX, 2
-    call displayPaddle
-    jmp noKeyPressed  
+    cmp paddleStart, 0
+    jne shiftPaddleLeft    
+    call deleteBall  
+    sub paddlePositionX, 4
+    sub ballPositionX, 4   
+    jmp paddleNotStart
+    
+shiftPaddleLeft:    
+    sub paddlePositionX, 4
+    call displayPaddle   
+    jmp start
+    
+paddleNotStart: 
+    call displayBall  
+    call displayPaddle 
+    call printBuffer
+    jmp start
       
-noKeyPressed: 
+noKeyPressed:
+    cmp paddleStart, 0
+    je start 
+    
     call deleteBall
     call moveBall
-    call displayBall 
+    call displayBall
+    cmp gameOver, 1
+    je LoseWait
+    
+    cmp score, 630
+    je winWait 
+    
+    call printBuffer
+    
+    xor ax, ax 
+    mov ah, 86h 
+    mov dx, 086A0h
+    mov cx, 1
+    int 15h 
+    
     jmp Start
     
-Enter:  
-    call moveBall
-    jmp start 
-
+LoseWait:
+   call printLose
+   call waitEnter
+   call clearBuffer
+   jmp restart
+ 
+winWait:
+   call printWin
+   call waitEnter
+   call clearBuffer  
+   jmp restart 
+   
+Enter:
+    cmp paddleStart, 0
+    jne noEnter   
+    mov paddleStart, 1
+    
+    mov verticalMovement, 1
+    mov horizontalMovement, 1   
+noEnter:    
+    jmp Start
+    
 Escape:      
 Exit:
+    xor ax, ax
+    mov al, 03
+    int 10h
     mov ah, 4Ch
     int 21h
 end main
- 
